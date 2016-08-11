@@ -1,0 +1,116 @@
+#navbar {
+  font-family: "century gothic", Arial, sans-serif; 
+  font-weight: bold;
+  font-size: 1em;
+  margin-bottom: 1em;
+  background-color: black;
+  color: #FFFFFF;
+  height: 2.3em;
+  text-align: center;
+  padding:0;
+  margin:0;
+}
+
+#navbar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0.3em;
+}
+
+#navbar ul li {
+  display: inline;
+  margin: 0;
+}
+
+#navbar ul li a {
+  background-color: black;
+  padding: 0.1em 1em 0.4em 1em;
+  margin: 0;
+  border-top: none;
+}
+
+#navbar a:link {
+  color: #888888;
+  background-color: black;
+  margin:0;
+}
+
+#navbar a:visited {
+  color: #888888;
+  background-color: black;
+}
+/* accented-color hover - start */
+#navbar a:hover {
+  color: white;
+}
+
+#navbar #navpart1 a:hover {
+  border-top: 3px solid royalblue;
+}
+
+#navbar #navpart2 a:hover {
+  border-top: 3px solid #CC9933;
+}
+
+#navbar #navpart3 a:hover {
+  border-top: 3px solid red;
+}
+
+#navbar #navpart4 a:hover {
+  border-top: 3px solid cyan;
+}
+
+#navbar #navpart5 a:hover {
+  border-top: 3px solid green;
+}
+/* accented-color hover - end */
+
+#navbar a:active {
+  color: white;
+  background-color: black;
+}
+
+#navbar ul.collapse {
+  display: none;
+}
+
+/* You are here accented styling - start */
+#navbar #iamherepart1 a {  
+  color: white;
+  background-color: black;
+  border-top: 3px solid royalblue;
+}
+
+#navbar #iamherepart2 a {  
+  color: white;
+  background-color: black;
+  border-top: 3px solid #CC9933;
+}
+
+#navbar #iamherepart3 a {  
+  color: white;
+  background-color: black;
+  border-top: 3px solid red;
+}
+
+#navbar #iamherepart4 a {  
+  color: white;
+  background-color: black;
+  border-top: 3px solid cyan;
+}
+
+#navbar #iamherepart5 a {  
+  color: white;
+  background-color: black;
+  border-top: 3px solid green;
+}
+/* You are here accented styling - end */
+
+.accent{
+	height: 1.5em;
+	margin: 0;
+	padding: 0;
+	background-color: #C8C8C8;
+}
+
+

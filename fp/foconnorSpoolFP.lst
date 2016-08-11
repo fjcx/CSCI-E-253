@@ -1,0 +1,948 @@
+SQL> 
+SQL> -- ******************************************************
+SQL> --    DROP TABLES
+SQL> -- Note:  Issue the appropiate commands to drop tables
+SQL> -- ******************************************************
+SQL> 
+SQL> 
+SQL> DROP table tblogin PURGE;
+DROP table tblogin PURGE
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+SQL> DROP table tbsourcekeyassociation PURGE;
+
+Table dropped.
+
+SQL> DROP table tbkeyword PURGE;
+
+Table dropped.
+
+SQL> DROP table tbusage PURGE;
+
+Table dropped.
+
+SQL> DROP table tbsource PURGE;
+
+Table dropped.
+
+SQL> DROP table tbproject PURGE;
+
+Table dropped.
+
+SQL> DROP table tbpublication PURGE;
+
+Table dropped.
+
+SQL> DROP table tbemployee PURGE;
+
+Table dropped.
+
+SQL> 
+SQL> -- ******************************************************
+SQL> --    DROP SEQUENCES
+SQL> -- Note:  Issue the appropiate commands to drop sequences
+SQL> -- ******************************************************
+SQL> 
+SQL> DROP sequence seqsrckey;
+
+Sequence dropped.
+
+SQL> DROP sequence seqkeyword;
+
+Sequence dropped.
+
+SQL> DROP sequence sequsage;
+
+Sequence dropped.
+
+SQL> DROP sequence seqsource;
+
+Sequence dropped.
+
+SQL> DROP sequence seqproj;
+
+Sequence dropped.
+
+SQL> DROP sequence seqpub;
+
+Sequence dropped.
+
+SQL> DROP sequence seqemp;
+
+Sequence dropped.
+
+SQL> 
+SQL> -- ******************************************************
+SQL> --    CREATE TABLES
+SQL> -- ******************************************************
+SQL> 
+SQL> CREATE table tbemployee (
+  2  	     empid		     char(3)		     not null
+  3  			     constraint rg_empid check (empid between '100' and '999')
+  4  			     constraint pk_employee primary key,
+  5  	     empfirstname    varchar2(40)	     not null,
+  6  		     emplastname     varchar2(40)	     not null,
+  7  		     empemailemail   varchar2(50)	     null,
+  8  	     empphone		     varchar2(20)	     null
+  9  );
+
+Table created.
+
+SQL> 
+SQL> 
+SQL> CREATE table tbpublication (
+  2  	     pubid	     char(4)		     not null
+  3  			     constraint rg_pubid check (pubid between '1000' and '4999')
+  4  			     constraint pk_publication primary key,
+  5  	     pubname	     varchar2(50)	     not null,
+  6  	     pubtype	     varchar2(30)		     null
+  7  );
+
+Table created.
+
+SQL> 
+SQL> CREATE table tbproject (
+  2  	     projid	     char(4)		     not null
+  3  			     constraint rg_projid check (projid between '1000' and '4999')
+  4  			     constraint pk_project primary key,
+  5  	     projtitle	     varchar2(50)	     not null,
+  6  	     projtype		     varchar2(20)	     null,
+  7  		     estdays		     number(3,0)  default 1  null
+  8  			     constraint rg_estDays check (estdays > 0 and estdays < 400 ),
+  9  		     projdate	     date    default sysdate	 null,
+ 10  	     projowner	     char(3)			     null
+ 11  			     constraint rg_projowner check (projowner between '100' and '999')
+ 12  			     constraint fk_projowner_tbproject references tbemployee (empid) ON DELETE SET NULL
+ 13  );
+
+Table created.
+
+SQL> 
+SQL> 
+SQL> CREATE table tbsource (
+  2  	     sourceid	     char(4)		     not null
+  3  			     constraint rg_sourceid check (sourceid between '1000' and '9999')
+  4  			     constraint pk_source primary key,
+  5  	     sourcetitle     varchar2(50)	     not null,
+  6  		     sourcecontent   varchar2(250)	     not null,
+  7  		     sourceauthor    varchar2(40)	     null,
+  8  		     datepublished   date    default sysdate	 null,
+  9  		     enteredbyemp	     char(3)		     null
+ 10  			     constraint rg_enteredbyemp check (enteredbyemp between '100' and '999')
+ 11  			     constraint fk_enteredbyemp_tbsource references tbemployee (empid) ON DELETE SET NULL,
+ 12  		     sourcetopic     varchar2(20)	     null,
+ 13  		     sourceurl	     varchar2(150)	     not null,
+ 14  	     pubid		     char(4)			     null
+ 15  			     constraint rg_pubid_tbsource check (pubid between '1000' and '4999')
+ 16  			     constraint fk_pubid_tbsource references tbpublication (pubid) ON DELETE SET NULL
+ 17  );
+
+Table created.
+
+SQL> 
+SQL> 
+SQL> CREATE table tbusage (
+  2  	     useid	     char(4)		     not null
+  3  			     constraint rg_useid check (useid between '1000' and '9999')
+  4  			     constraint pk_usage primary key,
+  5  		     sourceid	     char(4)		     not null
+  6  			     constraint rg_sourceid_tbusage check (sourceid between '1000' and '9999')
+  7  			     constraint fk_sourceid_tbusage references tbsource (sourceid) ON DELETE CASCADE,
+  8  		     projid	     char(4)		     not null
+  9  			     constraint rg_projid_tbusage check (projid between '1000' and '4999')
+ 10  			     constraint fk_projid_tbusage references tbproject (projid) ON DELETE CASCADE,
+ 11  		     howused   varchar2(20)			     not null,
+ 12  	     dateused	     date    default sysdate	 not null
+ 13  );
+
+Table created.
+
+SQL> 
+SQL> -- Make many to many !!!!
+SQL> CREATE table tbkeyword (
+  2  	     keywordid	     char(4)		     not null
+  3  			     constraint rg_keywordid check (keywordid between '1000' and '9999')
+  4  			     constraint pk_tbkeyword primary key,
+  5  	     keyword	     varchar2(40)	     not null
+  6  );
+
+Table created.
+
+SQL> 
+SQL> -- keyword association table
+SQL> CREATE table tbsourcekeyassociation (
+  2  	     keywordid	     char(4)		     not null
+  3  			     constraint rg_keywordid_tbsrckeyassoc check (keywordid between '1000' and '9999')
+  4  			     constraint fk_keywordid_tbsrckeyassoc references tbkeyword (keywordid) ON DELETE CASCADE,
+  5  	     sourceid	     char(4)		     not null
+  6  			     constraint rg_sourceid_tbsrckeyassoc check (sourceid between '1000' and '9999')
+  7  			     constraint fk_sourceid_tbsrckeyassoc references tbsource (sourceid) ON DELETE CASCADE,
+  8  			     constraint pk_sourcekeyassociation primary key (keywordid, sourceid)
+  9  );
+
+Table created.
+
+SQL> 
+SQL> 
+SQL> -- create security login table
+SQL> CREATE table tblogin (
+  2  	     uname varchar2(20) not null
+  3  			     constraint pk_tblogin primary key,
+  4  		     pwd varchar2(20) not null,
+  5  		     fname varchar2(20) not null,
+  6  		     userview varchar2(20) null
+  7  );
+
+Table created.
+
+SQL> 
+SQL> -- ******************************************************
+SQL> --    CREATE SEQUENCES
+SQL> -- ******************************************************
+SQL> 
+SQL> CREATE sequence seqemp
+  2  	     MINVALUE 100
+  3  	     MAXVALUE 999
+  4  	     START WITH 100
+  5  	     INCREMENT BY 1;
+
+Sequence created.
+
+SQL> CREATE sequence seqpub
+  2  	     MINVALUE 1000
+  3  	     MAXVALUE 4999
+  4  	     START WITH 1000
+  5  	     INCREMENT BY 1;
+
+Sequence created.
+
+SQL> CREATE sequence seqproj
+  2  	     MINVALUE 1000
+  3  	     MAXVALUE 4999
+  4  	     START WITH 1000
+  5  	     INCREMENT BY 1;
+
+Sequence created.
+
+SQL> CREATE sequence seqsource
+  2  	     MINVALUE 1000
+  3  	     MAXVALUE 9999
+  4  	     START WITH 1000
+  5  	     INCREMENT BY 1;
+
+Sequence created.
+
+SQL> CREATE sequence sequsage
+  2  	     MINVALUE 1000
+  3  	     MAXVALUE 9999
+  4  	     START WITH 1000
+  5  	     INCREMENT BY 1;
+
+Sequence created.
+
+SQL> CREATE sequence seqkeyword
+  2  	     MINVALUE 1000
+  3  	     MAXVALUE 9999
+  4  	     START WITH 1000
+  5  	     INCREMENT BY 1;
+
+Sequence created.
+
+SQL> CREATE sequence seqsrckey
+  2  	     MINVALUE 1000
+  3  	     MAXVALUE 9999
+  4  	     START WITH 1000
+  5  	     INCREMENT BY 1;
+
+Sequence created.
+
+SQL> 
+SQL> -- ******************************************************
+SQL> --    POPULATE TABLES
+SQL> --
+SQL> -- Note:  Follow instructions and data provided on PS-3
+SQL> --        to populate the tables
+SQL> -- ******************************************************
+SQL> 
+SQL> /* table tbemployee */
+SQL> INSERT into tbemployee values (seqemp.nextval, 'Sam', 'Smith', 'sam@spi.org', '(555)444-5551');
+
+1 row created.
+
+SQL> INSERT into tbemployee values (seqemp.nextval, 'Kate', 'Brown', 'kate@spi.org', '(555)444-5552');
+
+1 row created.
+
+SQL> INSERT into tbemployee values (seqemp.nextval, 'Jane', 'Green', 'jane@spi.org', '(555)444-5553');
+
+1 row created.
+
+SQL> INSERT into tbemployee values (seqemp.nextval, 'Jack', 'Black', 'jack@spi.org', '(555)444-5554');
+
+1 row created.
+
+SQL> 
+SQL> 
+SQL> /* table tbpublication */
+SQL> INSERT into tbpublication values (seqpub.nextval, 'Earth Open Source', 'report');
+
+1 row created.
+
+SQL> INSERT into tbpublication values (seqpub.nextval, 'The New York Times', 'newspaper');
+
+1 row created.
+
+SQL> INSERT into tbpublication values (seqpub.nextval, 'US Energy Information Administration', 'report');
+
+1 row created.
+
+SQL> INSERT into tbpublication values (seqpub.nextval, 'UN Food and Agriculture Organization', 'report');
+
+1 row created.
+
+SQL> INSERT into tbpublication values (seqpub.nextval, 'The World Future Council', 'article');
+
+1 row created.
+
+SQL> INSERT into tbpublication values (seqpub.nextval, 'The Organic Center', 'article');
+
+1 row created.
+
+SQL> 
+SQL> 
+SQL> /* table tbproject */
+SQL> INSERT into tbproject values (seqproj.nextval, 'Controversies in Science', 'chapter', '23', to_date('20120201','YYYYMMDD'), '101');
+
+1 row created.
+
+SQL> INSERT into tbproject values (seqproj.nextval, 'EcoMind', 'book', '270', to_date('20110306','YYYYMMDD'), '103');
+
+1 row created.
+
+SQL> INSERT into tbproject values (seqproj.nextval, 'Rethinking the Scarcity Discourse', 'journal', '140', to_date('20120112','YYYYMMDD'), '103');
+
+1 row created.
+
+SQL> INSERT into tbproject values (seqproj.nextval, 'Corporations Cant Pledge Allegiance', 'blog', '3', to_date('20120416','YYYYMMDD'), '101');
+
+1 row created.
+
+SQL> INSERT into tbproject values (seqproj.nextval, 'Diet for a Small Planet', 'book', '340', to_date('20780705','YYYYMMDD'), '104');
+
+1 row created.
+
+SQL> 
+SQL> 
+SQL> /* table tbsource */
+SQL> INSERT into tbsource values (seqsource.nextval, 'GMO Myths and Truths', 'Glyphosate causes or exacerbates plant disease', 'Michael Antoniou', to_date('20120611','YYYYMMDD'), '101', 'Food', 'http://earthopensource.org/index.php/reports/58', '1001');
+
+1 row created.
+
+SQL> INSERT into tbsource values (seqsource.nextval, 'A Sad Green Story', 'Leonnig reports that 14 green tech firms that Gore invested in received or directly benefited from more than $2.5 billion in federal loans, grants and tax breaks', 'David Brooks', to_date('20121018','YYYYMMDD'), '101', 'Environment', 'http://www.nytimes.com/2012/10/19/opinion/brooks-a-sad-green-story.html', '1001');
+
+1 row created.
+
+SQL> INSERT into tbsource values (seqsource.nextval, 'Annual Energy Outlook 2012', 'The California Low Carbon Fuel Standard (LCFS) was removed from the final Reference case, given the Federal court ruling in December 2011 that found some aspects of it to be unconstitutional', 'US EIA', to_date('20120621','YYYYMMDD'), '104', 'Enivronment', 'http://www.eia.gov/forecasts/aeo/', '1002');
+
+1 row created.
+
+SQL> INSERT into tbsource values (seqsource.nextval, 'The State of Food Insecurity in the World', 'Agricultural growth is particularly effective in reducing hunger and malnutrition. Most of the extreme poor depend on agriculture and related activities for a significant part of their livelihoods', 'UN FAO', to_date('20120514','YYYYMMDD'), '102', 'Hunger', 'http://www.fao.org/docrep/016/i2845e/i2845e00.pdf', '1003');
+
+1 row created.
+
+SQL> INSERT into tbsource values (seqsource.nextval, 'Findings on Accessibility of the Zero Project', 'The Zero Project advocates the rights of persons with disabilities internationally by monitoring the national implementation of the UN Convention on the Rights of Persons with Disabilities and by highlighting good policies and practices', 'The WFC', to_date('20100211','YYYYMMDD'), '101', 'Human Rights', 'http://www.worldfuturecouncil.org/publications.html', '1004');
+
+1 row created.
+
+SQL> INSERT into tbsource values (seqsource.nextval, 'Simplifying the Pesticide Risk Equation', 'Today, organic fresh produce sales account for close to 9% of retail sales, and are substantially reducing presticide exposure for million of Americans', 'Charles Benbrook', to_date('20080322','YYYYMMDD'), '102', 'Food', 'http://www.organic-center.org/science.tocreports.html', '1005');
+
+1 row created.
+
+SQL> INSERT into tbsource values (seqsource.nextval, 'The Cacophony of Money', 'This is only the first presidential election in the Citizens United era of unlimited spending, and the first since 1976 in which both presidential candidates spurned the public finance system', 'NY Times Editors', to_date('20120710','YYYYMMDD'), '101', 'Politics', 'http://www.nytimes.com/2012/10/08/opinion/the-cacophony-of-money.html?_r=0', '1001');
+
+1 row created.
+
+SQL> 
+SQL> /* table tbusage */
+SQL> 
+SQL> INSERT into tbusage values (sequsage.nextval, '1003', '1001', 'background', to_date('20120310','YYYYMMDD'));
+
+1 row created.
+
+SQL> INSERT into tbusage values (sequsage.nextval, '1001', '1001', 'background', to_date('20120410','YYYYMMDD'));
+
+1 row created.
+
+SQL> INSERT into tbusage values (sequsage.nextval, '1001', '1003', 'tweet', to_date('20120504','YYYYMMDD'));
+
+1 row created.
+
+SQL> INSERT into tbusage values (sequsage.nextval, '1003', '1001', 'background', to_date('20110312','YYYYMMDD'));
+
+1 row created.
+
+SQL> INSERT into tbusage values (sequsage.nextval, '1002', '1001', 'background', to_date('20110210','YYYYMMDD'));
+
+1 row created.
+
+SQL> INSERT into tbusage values (sequsage.nextval, '1005', '1001', 'fact', to_date('20110220','YYYYMMDD'));
+
+1 row created.
+
+SQL> INSERT into tbusage values (sequsage.nextval, '1006', '1003', 'fact', to_date('20120910','YYYYMMDD'));
+
+1 row created.
+
+SQL> 
+SQL> /* table tbkeyword */
+SQL> INSERT into tbkeyword values (seqkeyword.nextval, 'roundup ready corn');
+
+1 row created.
+
+SQL> INSERT into tbkeyword values (seqkeyword.nextval, 'plant disease');
+
+1 row created.
+
+SQL> INSERT into tbkeyword values (seqkeyword.nextval, 'reneable energy');
+
+1 row created.
+
+SQL> INSERT into tbkeyword values (seqkeyword.nextval, 'clean tech');
+
+1 row created.
+
+SQL> INSERT into tbkeyword values (seqkeyword.nextval, 'income inequality');
+
+1 row created.
+
+SQL> INSERT into tbkeyword values (seqkeyword.nextval, 'pesticides');
+
+1 row created.
+
+SQL> 
+SQL> /* table tbsourcekeyassociation */
+SQL> INSERT into tbsourcekeyassociation values ('1001', '1001');
+
+1 row created.
+
+SQL> INSERT into tbsourcekeyassociation values ('1001', '1002');
+
+1 row created.
+
+SQL> INSERT into tbsourcekeyassociation values ('1002', '1001');
+
+1 row created.
+
+SQL> INSERT into tbsourcekeyassociation values ('1003', '1002');
+
+1 row created.
+
+SQL> INSERT into tbsourcekeyassociation values ('1004', '1003');
+
+1 row created.
+
+SQL> INSERT into tbsourcekeyassociation values ('1005', '1005');
+
+1 row created.
+
+SQL> 
+SQL> 
+SQL> /* table tblogin */
+SQL> INSERT into tblogin values ('admin', '253admin','admin','all');
+
+1 row created.
+
+SQL> INSERT into tblogin values ('user', '253user','staff','restrict');
+
+1 row created.
+
+SQL> 
+SQL> -- ******************************************************
+SQL> --    VIEW TABLES
+SQL> --
+SQL> -- Note:  Issue the appropiate commands to show your data
+SQL> -- ******************************************************
+SQL> 
+SQL> SELECT * FROM tbemployee;
+
+EMP EMPFIRSTNAME                                                                
+--- ----------------------------------------                                    
+EMPLASTNAME                                                                     
+----------------------------------------                                        
+EMPEMAILEMAIL                                      EMPPHONE                     
+-------------------------------------------------- --------------------         
+101 Sam                                                                         
+Smith                                                                           
+sam@spi.org                                        (555)444-5551                
+                                                                                
+102 Kate                                                                        
+Brown                                                                           
+kate@spi.org                                       (555)444-5552                
+
+EMP EMPFIRSTNAME                                                                
+--- ----------------------------------------                                    
+EMPLASTNAME                                                                     
+----------------------------------------                                        
+EMPEMAILEMAIL                                      EMPPHONE                     
+-------------------------------------------------- --------------------         
+                                                                                
+103 Jane                                                                        
+Green                                                                           
+jane@spi.org                                       (555)444-5553                
+                                                                                
+104 Jack                                                                        
+Black                                                                           
+
+EMP EMPFIRSTNAME                                                                
+--- ----------------------------------------                                    
+EMPLASTNAME                                                                     
+----------------------------------------                                        
+EMPEMAILEMAIL                                      EMPPHONE                     
+-------------------------------------------------- --------------------         
+jack@spi.org                                       (555)444-5554                
+                                                                                
+
+SQL> SELECT * FROM tbpublication;
+
+PUBI PUBNAME                                                                    
+---- --------------------------------------------------                         
+PUBTYPE                                                                         
+------------------------------                                                  
+1001 Earth Open Source                                                          
+report                                                                          
+                                                                                
+1002 The New York Times                                                         
+newspaper                                                                       
+                                                                                
+1003 US Energy Information Administration                                       
+report                                                                          
+                                                                                
+
+PUBI PUBNAME                                                                    
+---- --------------------------------------------------                         
+PUBTYPE                                                                         
+------------------------------                                                  
+1004 UN Food and Agriculture Organization                                       
+report                                                                          
+                                                                                
+1005 The World Future Council                                                   
+article                                                                         
+                                                                                
+1006 The Organic Center                                                         
+article                                                                         
+                                                                                
+
+6 rows selected.
+
+SQL> SELECT * FROM tbproject;
+
+PROJ PROJTITLE                                          PROJTYPE                
+---- -------------------------------------------------- --------------------    
+   ESTDAYS PROJDATE  PRO                                                        
+---------- --------- ---                                                        
+1001 Controversies in Science                           chapter                 
+        23 01-FEB-12 101                                                        
+                                                                                
+1002 EcoMind                                            book                    
+       270 06-MAR-11 103                                                        
+                                                                                
+1003 Rethinking the Scarcity Discourse                  journal                 
+       140 12-JAN-12 103                                                        
+                                                                                
+
+PROJ PROJTITLE                                          PROJTYPE                
+---- -------------------------------------------------- --------------------    
+   ESTDAYS PROJDATE  PRO                                                        
+---------- --------- ---                                                        
+1004 Corporations Cant Pledge Allegiance                blog                    
+         3 16-APR-12 101                                                        
+                                                                                
+1005 Diet for a Small Planet                            book                    
+       340 05-JUL-78 104                                                        
+                                                                                
+
+SQL> SELECT * FROM tbsource;
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+1001 GMO Myths and Truths                                                       
+Glyphosate causes or exacerbates plant disease                                  
+Michael Antoniou                         11-JUN-12 101 Food                     
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+http://earthopensource.org/index.php/reports/58                                 
+1001                                                                            
+                                                                                
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+1002 A Sad Green Story                                                          
+Leonnig reports that 14 green tech firms that Gore invested in received or direc
+tly benefited from more than $2.5 billion in federal loans, grants and tax break
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+s                                                                               
+David Brooks                             18-OCT-12 101 Environment              
+http://www.nytimes.com/2012/10/19/opinion/brooks-a-sad-green-story.html         
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+1001                                                                            
+                                                                                
+1003 Annual Energy Outlook 2012                                                 
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+The California Low Carbon Fuel Standard (LCFS) was removed from the final Refere
+nce case, given the Federal court ruling in December 2011 that found some aspect
+s of it to be unconstitutional                                                  
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+US EIA                                   21-JUN-12 104 Enivronment              
+http://www.eia.gov/forecasts/aeo/                                               
+1002                                                                            
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+                                                                                
+1004 The State of Food Insecurity in the World                                  
+Agricultural growth is particularly effective in reducing hunger and malnutritio
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+n. Most of the extreme poor depend on agriculture and related activities for a s
+ignificant part of their livelihoods                                            
+UN FAO                                   14-MAY-12 102 Hunger                   
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+http://www.fao.org/docrep/016/i2845e/i2845e00.pdf                               
+1003                                                                            
+                                                                                
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+1005 Findings on Accessibility of the Zero Project                              
+The Zero Project advocates the rights of persons with disabilities international
+ly by monitoring the national implementation of the UN Convention on the Rights 
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+of Persons with Disabilities and by highlighting good policies and practices    
+The WFC                                  11-FEB-10 101 Human Rights             
+http://www.worldfuturecouncil.org/publications.html                             
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+1004                                                                            
+                                                                                
+1006 Simplifying the Pesticide Risk Equation                                    
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+Today, organic fresh produce sales account for close to 9% of retail sales, and 
+are substantially reducing presticide exposure for million of Americans         
+Charles Benbrook                         22-MAR-08 102 Food                     
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+http://www.organic-center.org/science.tocreports.html                           
+1005                                                                            
+                                                                                
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+1007 The Cacophony of Money                                                     
+This is only the first presidential election in the Citizens United era of unlim
+ited spending, and the first since 1976 in which both presidential candidates sp
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+urned the public finance system                                                 
+NY Times Editors                         10-JUL-12 101 Politics                 
+http://www.nytimes.com/2012/10/08/opinion/the-cacophony-of-money.html?_r=0      
+
+SOUR SOURCETITLE                                                                
+---- --------------------------------------------------                         
+SOURCECONTENT                                                                   
+--------------------------------------------------------------------------------
+SOURCEAUTHOR                             DATEPUBLI ENT SOURCETOPIC              
+---------------------------------------- --------- --- --------------------     
+SOURCEURL                                                                       
+--------------------------------------------------------------------------------
+PUBI                                                                            
+----                                                                            
+1001                                                                            
+                                                                                
+
+7 rows selected.
+
+SQL> SELECT * FROM tbusage;
+
+USEI SOUR PROJ HOWUSED              DATEUSED                                    
+---- ---- ---- -------------------- ---------                                   
+1001 1003 1001 background           10-MAR-12                                   
+1002 1001 1001 background           10-APR-12                                   
+1003 1001 1003 tweet                04-MAY-12                                   
+1004 1003 1001 background           12-MAR-11                                   
+1005 1002 1001 background           10-FEB-11                                   
+1006 1005 1001 fact                 20-FEB-11                                   
+1007 1006 1003 fact                 10-SEP-12                                   
+
+7 rows selected.
+
+SQL> SELECT * FROM tbkeyword;
+
+KEYW KEYWORD                                                                    
+---- ----------------------------------------                                   
+1001 roundup ready corn                                                         
+1002 plant disease                                                              
+1003 reneable energy                                                            
+1004 clean tech                                                                 
+1005 income inequality                                                          
+1006 pesticides                                                                 
+
+6 rows selected.
+
+SQL> SELECT * FROM tbsourcekeyassociation;
+
+KEYW SOUR                                                                       
+---- ----                                                                       
+1001 1001                                                                       
+1001 1002                                                                       
+1002 1001                                                                       
+1003 1002                                                                       
+1004 1003                                                                       
+1005 1005                                                                       
+
+6 rows selected.
+
+SQL> SELECT * FROM tblogin;
+
+UNAME                PWD                  FNAME                                 
+-------------------- -------------------- --------------------                  
+USERVIEW                                                                        
+--------------------                                                            
+admin                253admin             admin                                 
+all                                                                             
+                                                                                
+user                 253user              staff                                 
+restrict                                                                        
+                                                                                
+
+SQL> 
+SQL> -- ******************************************************
+SQL> --    QUALITY CONTROLS
+SQL> --
+SQL> -- Note:  Test the following constraints:
+SQL> --        *) Entity integrity
+SQL> --        *) Referential integrity
+SQL> --        *) Column constraints
+SQL> -- ******************************************************
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> -- ****************************************************************
+SQL> -- STORED PROCEDURES
+SQL> --
+SQL> -- purpose: Using a procedure to delete an employee and in the process
+SQL> -- assign another arbitrary employee to temporarily take over their owned
+SQL> -- projects until a new full-time owner is assigned
+SQL> -- ****************************************************************
+SQL> 
+SQL> CREATE or REPLACE procedure delete_employee
+  2  	(   DEL_EMPID	in	tbemployee.empid%TYPE,
+  3  	    NEW_OWNER	out	tbproject.projowner%TYPE
+  4  	)
+  5  is
+  6  	     newowner char(3);
+  7  	     tmpcnt integer;
+  8  begin
+  9  	     /* get arbitrary new employee to temporarily own project */
+ 10  	     select count(1) into tmpcnt
+ 11  	     from tbemployee
+ 12  		     where empid <> DEL_EMPID
+ 13  		     and rownum < 2;
+ 14  
+ 15  	     /* account for when deleting the last employee -- and no data error */
+ 16  	     if tmpcnt > 0 then
+ 17  		     select empid
+ 18  		     into newowner
+ 19  		     from tbemployee
+ 20  			     where empid <> DEL_EMPID
+ 21  			     and rownum < 2;
+ 22  
+ 23  		     if newowner IS NOT NULL then
+ 24  			     update tbproject
+ 25  			     set projowner=newowner
+ 26  			     where projowner=DEL_EMPID;
+ 27  		     end if;
+ 28  	     end if;
+ 29  
+ 30  	     delete from tbemployee
+ 31  		     where empid = DEL_EMPID;
+ 32  
+ 33  	     /* new project owner is returned */
+ 34  	     NEW_OWNER := newowner;
+ 35  
+ 36  end delete_employee;
+ 37  /
+
+Procedure created.
+
+SQL> 
+SQL> show errors
+No errors.
+SQL> 
+SQL> -- ******************************************************
+SQL> --    END SESSION
+SQL> -- ******************************************************
+SQL> commit;
+
+Commit complete.
+
+SQL> spool off

@@ -1,0 +1,193 @@
+<style type="text/css">
+@import url("navStyle.css");
+@import url("css/blue/style.css");
+
+	#header{
+		height: 120px;
+		background-repeat:no-repeat;
+		width: 100%;
+		background: #505050;
+	}
+
+	#headerTitle {
+		font-family: "century gothic", Arial, sans-serif;
+		font-weight: bold;
+		color: #FAD872;
+		background: none;
+		margin: 0 auto;
+		padding: 0.5em 0em 0em 0.5em;
+		float:left;
+		clear:left;
+	}
+	
+	#subhead{
+		color: #C8C8C8;
+		padding: 1em;
+		float:right;
+		clear:right;
+	}
+	
+	#footer{
+		height: 50px;
+		background-repeat:no-repeat;
+		width: 100%;
+		background: #E5ECF9;
+		padding-top: 1.4em;
+		text-align: center;
+		margin-top:	0;
+	}
+
+	h1, h2, h3 {
+		color: #404040;
+		margin-top:	0;
+		margin-bottom:	0.3em;
+		padding-top:	0;
+	}
+
+	h2 {
+		border-bottom:3px solid;
+		padding: 0.2em;
+	}
+	
+	#filtertable{
+		border: 2px solid #E0E0E0;
+		padding: 10px;
+	}
+	
+	#filtertable td{
+		padding: 4px 30px 4px; 4px;
+	}
+		
+	.breadcrumb{
+		font-size:80%;
+		color: #509467;
+	}
+	
+	.breadcrumb #logoutbtn{
+		float: right;
+		text-align: right;
+	}
+	
+	.lowernav{
+		border-top:3px solid;
+		padding: 0.8em;
+		text-align: center;
+	}
+	
+	.inputform{
+		height:20%;
+	}
+	
+	.outputreport{
+		height:80%;
+	}
+		
+	.mainBody{ 
+		color:black;
+		background: #ffffff;
+		margin-top:	0;
+		margin-bottom:	0;
+		padding-top:	1.0em;
+		padding-bottom:	0em;
+		padding-left:	2em;
+		padding-right:	2em;
+		height: 100%;
+		overflow:auto; 
+	}
+
+	.mainBody a:hover {
+	  text-decoration:underline;
+	}
+
+	.mainBody a:active {
+	  text-decoration:underline;
+	}
+	
+	.warning {
+	  color:red;
+	}
+	
+	.orderhd {
+	  color: #509467;
+	}
+	
+	body{
+		font-family: verdana, Arial, sans-serif; 
+		margin-left:	5%;
+		margin-right:	5%;
+		margin-top:		0;
+		margin-bottom:	0;
+		width:	auto;
+		background: #E0E0E0;
+		height: 75%;
+	}
+	
+	caption { font-weight: bold; font-size: larger;}
+
+	input.positive, input.negative, input.add, input.view, input.edit{
+		display:block;
+		float:left;
+		margin:0 8px 0 0;
+		background-color:#E0E0E0;
+		border:1px solid #C6D880;
+		border-top:1px solid #eee;
+		border-left:1px solid #eee;    
+		font-family: verdana, Arial, sans-serif;
+		font-size:85%;
+		line-height:100%;
+		text-decoration:none;
+		font-weight:bold;
+		color:#404040;
+		cursor:pointer;
+		padding:4px 9px 5px 20px;
+	}
+	
+	/* input buttons style and images*/
+	/* Note: Credit to "http://famfamfam.com/" for creation of images  */
+	input.positive{
+		background: #E0E0E0 url('images/tick.png') no-repeat left;
+		color:#529214;
+	}
+	
+	input.add{
+		background: #E0E0E0 url('images/add.png') no-repeat left;
+		color:#529214;
+	}
+	
+	input.view{
+		background: #E0E0E0 url('images/zoom.png') no-repeat left;
+		color:#336699;
+	}
+	
+	input.edit{
+		background: #E0E0E0 url('images/edit.png') no-repeat left;		
+		color:#404040;
+	}
+	
+	input.negative{
+		background: #E0E0E0 url('images/cross.png') no-repeat left;
+		color:#d12f19;
+	}
+
+	input.view:hover{
+		background-color:#dff4ff;
+		border:1px solid #c2e1ef;		
+	}
+	
+	input.edit:hover{
+		background-color:#FFFF99;
+		border:1px solid #FAD872;	
+	}
+	
+	input.positive:hover,input.add:hover{
+		background-color:#E6EFC2;
+		border:1px solid #C6D880;		
+	}
+	
+	input.negative:hover{
+		background-color:#fbe3e4;
+		border:1px solid #fbc2c4;
+	}
+	
+</style>
+
